@@ -26,10 +26,10 @@
 # Import Modules
 #import sys
 #import platform
-#import logging
+import logging
 #import getopt
-#import suds
-#import ssl
+import suds
+import ssl
 #import time
 #import uuid
 #import os
@@ -40,3 +40,46 @@
 #from configobj import ConfigObj
 #from suds.client import Client
 #from suds.cache import NoCache
+
+if __name__=='__main__':
+    logging.basicConfig(level=logging.INFO,
+                        format='%(asctime)-25s %(name)s[%(process)d] : %(levelname)-8s %(message)s',
+                        datefmt='%a, %d %b %Y %H:%M:%S',
+                        filename='Log/' + time.strftime("%Y%m%d-%H%M%S-") + str(uuid.uuid4()) + '.log',
+                        filemode='w',
+                        )
+
+    ssl._create_default_https_context = ssl._create_unverified_context
+    element_config_file = None
+    logger = logging.getLogger('cisco.cucm.axl')
+    logger.setLevel(logging.INFO)
+    logging.getLogger('suds.client').setLevel(logging.CRITICAL)
+    logging.getLogger('suds.transport').setLevel(logging.CRITICAL)
+    logging.getLogger('suds.xsd.schema').setLevel(logging.CRITICAL)
+    logging.getLogger('suds.wsdl').setLevel(logging.CRITICAL)
+
+    console = logging.StreamHandler()
+    formatter = logging.Formatter('%(asctime)-25s %(name)s[%(process)d] : %(levelname)-8s %(message)s')
+    console.setFormatter(formatter)
+    console.setLevel=logger.setLevel
+    logging.getLogger('').addHandler(console)
+
+    logger.info('Estamos usando Python v%s' % (platform.python_version()))
+
+    '''
+    logger.debug('This is a debug message')
+    logger.info('This is an info message')
+    logger.warning('This is a warning message')
+    logger.error('This is an error message')
+    logger.critical('This is a critical error message')
+    '''
+
+    if not parse_command_line(sys.argv):
+        logger.error("Error in parsing arguments")
+        sys.exit(1)
+
+    logger.info('Se ha seleccionado el cliente: %s' % (cspconfigfile['INFO']['customer'].upper()))
+    csp_soap_client = client_soap(element_config_file)
+    customer.Customer(logger, csp_soap_client,cspconfigfile)
+    logger.info('Se cerrara el programa')
+    sys.exit()
