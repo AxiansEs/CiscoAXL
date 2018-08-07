@@ -24,20 +24,19 @@
 # *------------------------------------------------------------------
 # *
 # Import Modules
-import sys
-import platform
-import logging
-import getopt
-import suds
-import ssl
-import time
-import uuid
-import os
-import csv
-import json
+#import sys
+#import platform
+#import logging
+#import getopt
+#import suds
+#import ssl
+#import time
+#import uuid
+#import os
+#import csv
+#import json
 
-from prettytable import PrettyTable
-from configobj import ConfigObj
-from suds.client import Client
-from suds.cache import NoCache
-
+#from prettytable import PrettyTable
+#from configobj import ConfigObj
+#from suds.client import Client
+#from suds.cache import NoCache
