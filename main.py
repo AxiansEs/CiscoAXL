@@ -25,13 +25,13 @@
 # *
 # Import Modules
 #import sys
-#import platform
+import platform
 import logging
 #import getopt
 import suds
 import ssl
-#import time
-#import uuid
+import time
+import uuid
 #import os
 #import csv
 #import json
