@@ -31,16 +31,16 @@
 csp_soap_client = 0
 
 # Import Modules
-import csv
-import getopt
-import json
+#import csv
+#import getopt
+#import json
 import logging
 import os
 import platform
 import sys
 import suds
 import ssl
-import threading
+#import threading
 import time
 import uuid
 
@@ -67,6 +67,7 @@ def client_soap(config_file):
 
     logger.debug('Ha entrado en la funcion client_soap()')
     csp_cmserver = cspconfigfile['CUCM']['server']
+    csp_ip = cspconfigfile['CUCM']['ip']
     csp_username = cspconfigfile['CUCM']['user']
     csp_password = cspconfigfile['CUCM']['pass']
     csp_version = cspconfigfile['CUCM']['version']
@@ -81,6 +82,7 @@ def client_soap(config_file):
     csp_location = 'https://' + csp_cmserver + ':8443/axl/'
 
     logger.debug('El valor de csp_cmserver es: %s' % (csp_cmserver))
+    logger.debug('El valor de csp_ip es: %s' % (csp_ip))
     logger.debug('El valor de csp_username es: %s' % (csp_username))
     logger.debug('El valor de csp_version es: %s' % (csp_version))
     logger.debug('El valor de csp_location es: %s' % (csp_location))
@@ -101,10 +103,8 @@ def client_soap(config_file):
         sys.exit()
     else:
         logger.info('Se ha creado el cliente SOAP.')
-
     try:
-        # csp_version_long = cspaxl_version.Get(logger,csp_soap_client,csp_cmserver)
-        csp_version_long = csp_soap_client.service.getCCMVersion(processNodeName=csp_cmserver)
+        csp_version_long = csp_soap_client.service.getCCMVersion(processNodeName=csp_ip)
     except:
         logger.error('Se ha producido un error al comprobar la version del servidor soap')
         logger.debug(sys.exc_info())
@@ -120,7 +120,7 @@ def client_soap(config_file):
 
 if __name__=='__main__':
     logging.basicConfig(level=logging.INFO,
-                        format='%(asctime)-25s %(name)s[%(process)d] : %(levelname)-8s %(message)s',
+                        format='%(asctime)-24s [%(name)s - %(levelname)s] : %(message)s',
                         datefmt='%a, %d %b %Y %H:%M:%S',
                         filename='Log/' + time.strftime("%Y%m%d-%H%M%S-") + str(uuid.uuid4()) + '.log',
                         filemode='w',
@@ -129,14 +129,14 @@ if __name__=='__main__':
     ssl._create_default_https_context = ssl._create_unverified_context
     element_config_file = None
     logger = logging.getLogger('cisco.cucm.axl')
-    logger.setLevel(logging.INFO)
+    logger.setLevel(logging.DEBUG)
     logging.getLogger('suds.client').setLevel(logging.CRITICAL)
     logging.getLogger('suds.transport').setLevel(logging.CRITICAL)
     logging.getLogger('suds.xsd.schema').setLevel(logging.CRITICAL)
     logging.getLogger('suds.wsdl').setLevel(logging.CRITICAL)
 
     console = logging.StreamHandler()
-    formatter = logging.Formatter('%(asctime)-25s %(name)s[%(process)d] : %(levelname)-8s %(message)s')
+    formatter = logging.Formatter('%(asctime)-24s [%(name)s - %(levelname)s] : %(message)s')
     console.setFormatter(formatter)
     console.setLevel=logger.setLevel
     logging.getLogger('').addHandler(console)
@@ -159,15 +159,16 @@ if __name__=='__main__':
     logger.debug('Buscamos todos los archivos *.cfg del directorio conf/')
     csp_table_file=PrettyTable(['id', 'Filename'])
     csp_table_id=0
-    csp_dir = 'conf/'
+
+    csp_dir='conf/'
     csp_file = []
     for file in os.listdir(csp_dir):
         if file.endswith(".cfg"):
             csp_file.append(file)
             csp_table_file.add_row([csp_table_id,file])
             csp_table_id += 1
-    
-    logger.debug('El numero de ficheros de configuracion es: %d',csp_table_id)
+
+    logger.debug('El numero de ficheros de configuracion es: %d' % (csp_table_id))
 
     if csp_table_id == 1:
         element_config_file = csp_dir + csp_file[0]
@@ -185,7 +186,6 @@ if __name__=='__main__':
             cspconfigfile = ConfigObj(element_config_file)
 
     logger.info('Se ha seleccionado el cliente: %s' % (cspconfigfile['INFO']['customer'].upper()))
-    # csp_soap_client = client_soap(element_config_file)
     client_soap(element_config_file)
     #customer.Customer(logger, csp_soap_client,cspconfigfile)
     logger.info('Se cerrara el programa')
